@@ -1,0 +1,92 @@
+/* Some CSS to make the page prettier; not relevant to RWD */
+html {
+  font-family: "Lucida Sans", sans-serif;
+}
+
+header {
+  background-color: #9933cc;
+  color: #ffffff;
+  padding: 15px;
+  grid-area: header; /*the name we want*/
+}
+
+footer {
+  background-color: #0099cc;
+  color: #ffffff;
+  text-align: center;
+  font-size: 12px;
+  padding: 15px;
+  grid-area: footer;
+}
+
+aside {
+  background-color: #33b5e5;
+  padding: 15px;
+  color: #ffffff;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+              0 1px 2px rgba(0, 0, 0, 0.24);
+  grid-area: aside;
+  align-self: start;
+}
+
+nav{
+  grid-area: navigation;
+  padding: 10px;
+}
+
+article{
+  grid-area: article;
+}
+
+nav a {
+  display: block;
+  text-decoration: none;
+  margin: 0;
+  text-align: center;
+  padding: 8px;
+  margin-bottom: 7px;
+  background-color: #33b5e5;
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+              0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: transform 0.5s;
+}
+
+nav a:hover {
+  background-color: #0099cc;
+}
+
+/* RWD starts here */
+
+/* This ensures the padding and border are included
+in the total width and height of an element. */
+* { /*ALL elements*/
+  box-sizing: border-box;
+}
+
+/* Mobile first currently - We could make another condition for mobiles*/
+
+@media screen and (min-width: 992px) { /*for desktop */
+  body{
+    display: grid;
+    grid-template-columns: 25% 50% 25%;
+    grid-template-areas: 
+      'header header header' /*first row, only header*/
+      'navigation article aside'
+      'footer footer footer';
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 992px) { /*for tablets */
+  body{
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas: 
+      'header header' /*first row, only header*/
+      'navigation article'
+      'aside aside'
+      'footer footer';
+    }
+}
