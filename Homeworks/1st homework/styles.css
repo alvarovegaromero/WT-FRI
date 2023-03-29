@@ -72,18 +72,18 @@ h2 {
     margin: 5px 0;
 }
 
-.comment{
+#post_comment_div{
     border: 0.5px solid black; 
     margin: 10px 0;  
 }
 
-.comment input 
+#post_comment_div input 
 {
   margin: 5px;
   margin-left: 20px;
 }
 
-.comment label 
+#post_comment_div label 
 {
   margin: 5px;
   margin-left: 20px;
@@ -92,6 +92,13 @@ h2 {
 #post_comment{
     padding: 5px;
     margin: 5px 0;    
+}
+
+.comment{
+    border: 0.5px solid black; 
+    margin: 10px 0;
+    text-align: left;
+    font-size: small;  
 }
 
 .flex_box{
@@ -123,4 +130,10 @@ h2 {
         margin-top: 0;
         margin-left: 20px;
     }
+}
+
+.delete_comment_button{
+    color: blue;
+    text-align: center;
+    text-decoration: underline;
 }

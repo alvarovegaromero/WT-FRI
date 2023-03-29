@@ -1,10 +1,14 @@
-// We will storage in LocalStorage: {name, comment, key of the product, key of the comment}
+//  We will storage in LocalStorage: {name, comment, key of the comment}
 
-window.onload = addOldComments(); //add old comments 
+//  Whenever we use more pages, we should storage the key of the product, for
+//showing the product's comments
+
+//window.onload = addOldComments(); //add old comments 
 
 document.addEventListener("DOMContentLoaded", () => {
     // This function is run after the page contents have been loaded
     // Put your initialization code here
+    addOldComments()
     document.getElementById("post_comment").onclick = addComment; //executed only when full page is loaded
 })
 
@@ -20,9 +24,10 @@ function addOldComments(){
             if(json != null){
                 let comment = {
                     name: json.name,
-                    opinion: json.opinion
+                    opinion: json.opinion,
+                    key: json.key
                 };
-        
+
                 domAddComment(comment)
             }
         }
@@ -30,6 +35,7 @@ function addOldComments(){
 }
 
 function getMaximumKey(){
+
     let max = 0
 
     const entries = Object.entries(localStorage)
@@ -42,10 +48,9 @@ function getMaximumKey(){
     return max;
 }    
 
-
 function getNewKey(){    
     const entries = Object.entries(localStorage)
-    
+
     if(entries.length != 0)// not empty
         return getMaximumKey(entries) + 1
     else //empty
@@ -63,8 +68,6 @@ function addComment(event) {
 
     let newKey = getNewKey()
 
-    print("hola")
-
     const comment = {
         name: name,
         opinion: opinion,
@@ -77,32 +80,50 @@ function addComment(event) {
 }
 
 function domAddComment(comment) {
-    const comments = document.getElementById("comments");;
-    comments.appendChild(comment_to_add);
-
+    var comments = document.getElementById("comments")
+   
     let comment_to_add = document.createElement("div");
+    comment_to_add.className = "comment";
+    comment_to_add.innerHTML = `<p> <b> ${comment.name} </b> </p> 
+                                <p> ${comment.opinion} </p> 
+                                <p class="delete_comment_button" onclick="domRemoveComment(this)"> Delete Comment </p>`;
+    comment_to_add.id = comment.key; //add the key of the comment 
 
-    //comment_to_add.ondblclick = domRemoveComment
-
-    comment_to_add.innerHTML = 'hola';
-
+    comments.appendChild(comment_to_add);
 }
 
-/*
-'<div class="comentario"> <p class= "autor">' + autor //html a poner en el comentariio este
-  + '</p> <p class = "fechayhora">' + fecha.getDate() + "/" + (fecha.getMonth()+1) + "/" + (fecha.getFullYear()) + '</p> <p class = "fechayhora">'
-  + fecha.getHours()+":"+fecha.getMinutes() + '</p> <p class = "textocomentario">'
-  + texto + '</p> </div>';
-*/
 
-/*
-function domRemoveParticipant(event) {
-
-    let row = event.target.parentElement
-    let table = event.target.parentElement.parentElement
-
-    if(confirm("Do you really want to delete the row?")){
-        table.removeChild(row)
-        localStorage.removeItem(row.lastChild.innerHTML) //get id of the content of the row
+function domRemoveComment(html_comment) {
+    let comment = html_comment.parentNode;
+    let comments = comment.parentNode;     
+    
+    if(confirm("Do you really want to delete the comment?")){
+        comments.removeChild(comment);
+        localStorage.removeItem(comment.id) //get id of the comment and remove it
     }
-}*/
+}
+
+function domSortAlphabeticallyComments(){ //Alphabetically in function of the author
+    var comments = document.getElementById("comments")
+
+    while (comments.firstChild) {
+        comments.removeChild(comments.firstChild);
+    }
+    
+    //Create an array of the names, and sort them alphabetically
+    entries = Object.entries(localStorage);
+    const names = [];
+
+    if(entries.length > 0){
+        for(let i = 0; i < entries; i++){
+            let string = localStorage.getItem(i)
+            let json = JSON.parse(string)
+
+            names.push(json.name);
+        }
+
+        names.sort()
+        console.log(names)
+    }
+
+}

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> Jamon </title>
-    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="styles.css" rel="stylesheet" type="text/css">
     <script src="scripts.js"></script>
 
 </head>
@@ -17,7 +17,7 @@
 
     <div class="flex_box">
         <section class="product_section">
-            <img class="cover_photo" src="photos/jamon.jpeg">
+            <img class="cover_photo" src="photos/jamon.jpeg" alt="photo of the 'jamon'">
             <h2> Jamón Ibérico </h2>
             <p> 
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean convallis orci id dui fermentum vehicula. 
@@ -33,23 +33,27 @@
         </section>
 
         <aside class="product_aside">
-            <div class="comments">
-                <div class="comment">
+            <div id="comments">
+                <div id="post_comment_div">
                     <p> Post your comment! </p>          
                     <form>
                         <div>
                             <label for="name">Name:</label><br>
-                            <input type="text" id="name" name="name"><br>
+                            <input type="text" id="name" name="name" required><br>
                         </div>
         
                         <div>
                         <label for="opinion">Opinion:</label><br>
-                        <input type="text" id="opinion" name="opinion"><br>
+                        <input type="text" id="opinion" name="opinion" required><br>
                         </div>
         
                         <button type="button" id="post_comment"> Post comment: </button>
                     </form>
                 </div>
+
+                <p> Read other comments </p>          
+                <!-- Other comments would be here -->
+                <p onclick="domSortAlphabeticallyComments()" class="delete_comment_button"> Sort comments </p>
             </div>
         </aside>
     </div>
