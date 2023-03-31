@@ -79,21 +79,23 @@ function addComment(event) {
     const name = document.querySelector("#name").value;
     const opinion = document.querySelector("#opinion").value;
     
-    //Set input fields to empty values
-    document.querySelector("#name").value = "";
-    document.querySelector("#opinion").value = "";
+    if(name != "" && opinion != "" ){
+        //Set input fields to empty values
+        document.querySelector("#name").value = "";
+        document.querySelector("#opinion").value = "";
 
-    let newKey = getNewKey()
+        let newKey = getNewKey()
 
-    const comment = {
-        name: name,
-        opinion: opinion,
-        key: newKey
-    };
+        const comment = {
+            name: name,
+            opinion: opinion,
+            key: newKey
+        };
 
-    localStorage.setItem(newKey, JSON.stringify(comment));
+        localStorage.setItem(newKey, JSON.stringify(comment));
 
-    domAddComment(comment);
+        domAddComment(comment);
+    }
 }
 
 function domAddComment(comment) {
