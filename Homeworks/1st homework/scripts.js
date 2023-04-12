@@ -126,9 +126,11 @@ function domSortAlphabeticallyComments(){ //Alphabetically in function of the au
     var comments = document.getElementById("comments")
 
     entries = Object.entries(localStorage);
-    const maxKey = getMaximumKey(entries)
 
     if(entries.length > 0){
+
+
+        const maxKey = getMaximumKey(entries)
 
         //We remove the unordered comments    
         for(let i = entries.length-1; i >= 0 ; i--){
