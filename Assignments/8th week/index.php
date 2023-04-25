@@ -26,11 +26,32 @@ $urls = [
             BookController::add();
         }
     },
+
+    // TODO: Add router entries for 1) search, 2) book/edit and 3) book/delete
+    "book/search" => function () {
+        BookController::search();
+    },
+
+    "book/edit" => function () {
+        if (isset($_GET["id"])) {
+            BookController::edit($_GET["id"]);
+        } else {
+            BookController::edit($_POST["id"]);
+        }
+    },
+
+    "book/delete" => function () {
+        if (isset($_GET["id"])) {
+            BookController::delete($_GET["id"]);
+        } else {
+            ViewHelper::redirect(BASE_URL . "book");
+        }
+    },
+
+    #default
     "" => function () {
         ViewHelper::redirect(BASE_URL . "book");
     }
-
-    // TODO: Add router entries for 1) search, 2) book/edit and 3) book/delete
 ];
 
 # The actual router.
