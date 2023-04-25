@@ -185,19 +185,8 @@ def process_request(connection, address, port):
         assert len(uri) > 0 and uri[0] == "/", "Invalid uri"
 
         file_path = "/www-data" + uri
-
-        if isfile(file_path[1:]):
-            # If the URI points to a file, give it to the client
-            with open(file_path[1:], "rb") as file:
-                resource = file.read()
-
-            mime, _ = mimetypes.guess_type(uri)
-            response_headers = HEADER_RESPONSE_200 % (mime, len(resource))
-
-            client.write(response_headers.encode("utf-8"))
-            client.write(resource)
             
-        elif(uri == "/app-add"):
+        if(uri == "/app-add"):
             if method == "POST":
 
                 post_params = parse_body(client, headers)
@@ -220,19 +209,81 @@ def process_request(connection, address, port):
             else:
                 client.write(RESPONSE_405.encode("utf-8"))
 
-        elif(uri == "/app-index"):
-            if method != "GET":
-                client.write(RESPONSE_405.encode("utf-8"))
+        elif(uri.startswith("/app-json")):
+            if method == "GET":
+
+                params = {}
+                results = []
+
+                if(uri != ("/app-json")): # has parameters   
+                    _, query = uri.split('?', 1)
+
+                    # parse query string into a dictionary
+                    for param in query.split('&'):
+                        key, value = param.split('=')
+                        params[unquote_plus(key)] = unquote_plus(value)
+                    
+                    results = read_from_db(params)
+
+                else:
+                    results = read_from_db()
+
+                response_body = json.dumps(results)
+                response_headers = HEADER_RESPONSE_200 % ("text/json", len(response_body))
+                client.write(response_headers.encode('utf-8'))
+                client.write(response_body.encode('utf-8'))
+
             else:
+                client.write(RESPONSE_405.encode("utf-8"))
 
+        elif(uri.startswith("/app-index")):
+            if method == "GET":
 
-                with open("www-data/user_list.html", "rb") as file:
+                params = {}
+
+                results = []
+
+                if(uri != ("/app-index")): # has parameters
+                    _, query = uri.split('?', 1)
+
+                    # parse query string into a dictionary
+                    for param in query.split('&'):
+                        key, value = param.split('=')
+                        params[unquote_plus(key)] = unquote_plus(value)
+                    
+                    results = read_from_db(params)
+                else:
+                    results = read_from_db()
+                
+
+                rows = []
+                for result in results:
+                    row = TABLE_ROW % (result["number"], result["first"], result["last"])
+                    rows.append(row)
+                
+                with open("www-data/app_list.html", "rb") as file:
                     resource = file.read()
-                    #resource = resource.decode("utf-8").replace("{{STUDENTS}}", table_rows)
+
+                table = "\n".join(rows)
+                resource = resource.replace(b"{{students}}", table.encode("utf-8"))
 
                 response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
                 client.write(response_headers.encode("utf-8"))
-                client.write(resource.encode("utf-8"))
+                client.write(resource)
+
+            else:
+                client.write(RESPONSE_405.encode("utf-8"))
+
+        elif isfile(file_path[1:]):
+            # If the URI points to a file, give it to the client
+            with open(file_path[1:], "rb") as file:
+                resource = file.read()
+
+            mime, _ = mimetypes.guess_type(uri)
+            response_headers = HEADER_RESPONSE_200 % (mime, len(resource))
+
+            client.write(response_headers.encode("utf-8"))
+            client.write(resource)
 
         elif isdir(file_path[1:]):
             if uri[-1] == "/": # last character is a /
