@@ -161,6 +161,13 @@ def process_request(connection, address, port):
         client.close()
         return
     
+    # Check for HTTP version 1.1
+    if version != "HTTP/1.1":
+        # Send a "400 Bad Request" response
+        client.write(RESPONSE_400.encode("utf-8"))
+        client.close()
+        return
+
     # Read and parse headers
 
     headers = parse_headers(client)
@@ -172,80 +179,91 @@ def process_request(connection, address, port):
     # Write the response back to the socket 
 
     # Check if the request is for adding a student to the database
-    if method == "POST":    
-        with open("www-data/app_add.html", "rb") as file:
-            resource = file.read()
 
-        response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
-        client.write(response_headers.encode("utf-8"))
-        client.write(resource)
-        
-    else:
-        # Handle requests for serving files/directories
-        try:
-            assert len(uri) > 0 and uri[0] == "/", "Invalid uri"
+    # Handle requests for serving files/directories
+    try:
+        assert len(uri) > 0 and uri[0] == "/", "Invalid uri"
 
-            file_path = "/www-data" + uri
+        file_path = "/www-data" + uri
 
-            if isfile(file_path[1:]):
-                # If the URI points to a file, give it to the client
-                with open(file_path[1:], "rb") as file:
-                    resource = file.read()
+        if isfile(file_path[1:]):
+            # If the URI points to a file, give it to the client
+            with open(file_path[1:], "rb") as file:
+                resource = file.read()
 
-                mime, _ = mimetypes.guess_type(uri)
-                response_headers = HEADER_RESPONSE_200 % (mime, len(resource))
+            mime, _ = mimetypes.guess_type(uri)
+            response_headers = HEADER_RESPONSE_200 % (mime, len(resource))
 
-                client.write(response_headers.encode("utf-8"))
-                client.write(resource)
-            elif isdir(file_path[1:]):
-                if uri[-1] == "/": # last character is a /
-                    index_file = file_path[1:] + "index.html"
-                    if isfile(index_file): #if index.html exists, serve it
-                        with open(index_file, "rb") as file:
-                            resource = file.read()
+            client.write(response_headers.encode("utf-8"))
+            client.write(resource)
+            
+        elif(method == "POST"):
 
-                        mime, _ = mimetypes.guess_type(uri)
-                        response_headers = HEADER_RESPONSE_200 % (mime, len(resource))  
+            OJO CHEQUAR ERROR DE PARAMETROS ACA
 
-                        client.write(response_headers.encode("utf-8"))
-                        client.write(resource)
-                    else:
-                        # serve directory list
-                        files = listdir(file_path[1:])
-                        files.sort()
+            post_params = parse_body(client, headers)
 
-                        file_links = ""
-                        for file in files: #add link to every file or dir
-                            #if isfile(file_path[1:] + file):
-                            #elif isdir(file_path[1:] + file):
-    
-                            link = FILE_TEMPLATE % (file, file)
+            first_name = post_params.get("first", "")
+            last_name = post_params.get("last", "")
 
-                            file_links += link
+            save_to_db(first_name, last_name)
 
-                        if uri != "/": #add parent directory 
-                            file_links = FILE_TEMPLATE % ("..", "..") + file_links #+ to keep old data
+            with open("www-data/app_add.html", "rb") as file:
+                resource = file.read()
 
-                        html = DIRECTORY_LISTING.replace('{{CONTENTS}}', file_links) % (file_path[9:], file_path[9:])
-                        response_headers = HEADER_RESPONSE_200 % ("text/html", len(html))
+            response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
+            client.write(response_headers.encode("utf-8"))
+            client.write(resource)
 
-                        client.write(response_headers.encode("utf-8"))
-                        client.write(html.encode("utf-8"))
-                else: #ends without trailing slash --> redirect 
-                    new_location = "http://localhost:%d%s/" % (port, uri)
-                    response_headers = HEADER_RESPONSE_301 % new_location
+        elif isdir(file_path[1:]):
+            if uri[-1] == "/": # last character is a /
+                index_file = file_path[1:] + "index.html"
+                if isfile(index_file): #if index.html exists, serve it
+                    with open(index_file, "rb") as file:
+                        resource = file.read()
+
+                    mime, _ = mimetypes.guess_type(uri)
+                    response_headers = HEADER_RESPONSE_200 % (mime, len(resource))  
 
                     client.write(response_headers.encode("utf-8"))
-            else:
-                # return error 404 if the URI is not redirecting to a directory or file
-                client.write(RESPONSE_404.encode("utf-8"))
+                    client.write(resource)
+                else:
+                    # serve directory list
+                    files = listdir(file_path[1:])
+                    files.sort()
 
-        except (ValueError, AssertionError) as e:
-            print("Invalid request line '%s' : %s" % (line, e))
-        except FileNotFoundError:
+                    file_links = ""
+                    for file in files: #add link to every file or dir
+                        #if isfile(file_path[1:] + file):
+                        #elif isdir(file_path[1:] + file):
+
+                        link = FILE_TEMPLATE % (file, file)
+
+                        file_links += link
+
+                    if uri != "/": #add parent directory 
+                        file_links = FILE_TEMPLATE % ("..", "..") + file_links #+ to keep old data
+
+                    html = DIRECTORY_LISTING.replace('{{CONTENTS}}', file_links) % (file_path[9:], file_path[9:])
+                    response_headers = HEADER_RESPONSE_200 % ("text/html", len(html))
+
+                    client.write(response_headers.encode("utf-8"))
+                    client.write(html.encode("utf-8"))
+            else: #ends without trailing slash --> redirect 
+                new_location = "http://localhost:%d%s/" % (port, uri)
+                response_headers = HEADER_RESPONSE_301 % new_location
+
+                client.write(response_headers.encode("utf-8"))
+        else:
+            # return error 404 if the URI is not redirecting to a directory or file
             client.write(RESPONSE_404.encode("utf-8"))
-        finally:
-            client.close()
+
+    except (ValueError, AssertionError) as e:
+        print("Invalid request line '%s' : %s" % (line, e))
+    except FileNotFoundError:
+        client.write(RESPONSE_404.encode("utf-8"))
+    finally:
+        client.close()
 
 def parse_headers(client):
     headers = {}
@@ -259,13 +277,14 @@ def parse_headers(client):
 
 #used for getting the parameters from the POST request
 def parse_body(client, headers):
-    content_length = int(headers.get('Content-Length', 0))
-    body = client.read(content_length).decode('utf-8')
-    params = {}
-    for param in body.split('&'):
-        key, value = param.split('=')
-        params[key] = value
-    return params
+    if "Content-Length" in headers:
+        content_length = int(headers["Content-Length"])
+        body = client.read(content_length).decode('utf-8')
+        params = {}
+        for param in body.split('&'):
+            key, value = param.split('=')
+            params[key] = unquote_plus(value)
+        return params
 
 def main(port):
     """Starts the server and waits for connections."""
