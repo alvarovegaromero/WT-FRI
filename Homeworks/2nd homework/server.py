@@ -197,23 +197,42 @@ def process_request(connection, address, port):
             client.write(response_headers.encode("utf-8"))
             client.write(resource)
             
-        elif(method == "POST"):
+        elif(uri == "/app-add"):
+            if method == "POST":
 
-            OJO CHEQUAR ERROR DE PARAMETROS ACA
+                post_params = parse_body(client, headers)
 
-            post_params = parse_body(client, headers)
+                first_name = post_params.get("first", "")
+                last_name = post_params.get("last", "")
 
-            first_name = post_params.get("first", "")
-            last_name = post_params.get("last", "")
+                if first_name and last_name:
+                    save_to_db(first_name, last_name)
 
-            save_to_db(first_name, last_name)
+                    with open("www-data/app_add.html", "rb") as file:
+                        resource = file.read()
 
-            with open("www-data/app_add.html", "rb") as file:
-                resource = file.read()
+                    response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
+                    client.write(response_headers.encode("utf-8"))
+                    client.write(resource)
 
-            response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
-            client.write(response_headers.encode("utf-8"))
-            client.write(resource)
+                else:
+                    client.write(RESPONSE_400.encode("utf-8"))
+            else:
+                client.write(RESPONSE_405.encode("utf-8"))
+
+        elif(uri == "/app-index"):
+            if method != "GET":
+                client.write(RESPONSE_405.encode("utf-8"))
+            else:
+
+
+                with open("www-data/user_list.html", "rb") as file:
+                    resource = file.read()
+                    #resource = resource.decode("utf-8").replace("{{STUDENTS}}", table_rows)
+
+                response_headers = HEADER_RESPONSE_200 % ("text/html", len(resource))
+                client.write(response_headers.encode("utf-8"))
+                client.write(resource.encode("utf-8"))
 
         elif isdir(file_path[1:]):
             if uri[-1] == "/": # last character is a /
