@@ -16,6 +16,51 @@ $urls = [
         HealthcareController::main();
     },
 
+    "healthcare/login_patient" => function () {
+        HealthcareController::loginPatient();
+    },
+
+    "healthcare/login_doctor" => function () {
+        HealthcareController:: loginDoctor();
+    },
+
+    "healthcare/logout" => function () {
+        HealthcareController:: logout();
+    },
+
+    "healthcare/register" => function () { //only patients can be registered with the form.
+        HealthcareController::registerPatient();
+    },
+
+    "healthcare/profile_patient" => function () {
+        HealthcareController::profilePatient();    
+    },
+
+    "healthcare/profile_doctor" => function () {
+        HealthcareController::profileDoctor();    
+    },
+
+    "healthcare/my_bookings" => function () {
+        HealthcareController::checkBookings();
+    },
+
+    "healthcare/cancel_booking" => function () {
+        if(isset($_POST["id_appointment"]))
+            HealthcareController::cancelBooking($_POST["id_appointment"]);
+    },
+
+    "healthcare/contact" => function () {
+        HealthcareController::contact();
+    },
+
+    "healthcare/about_us" => function () {
+        HealthcareController::aboutUs();
+    },
+
+    "healthcare/book" => function () {
+        HealthcareController::book();
+    },
+
     #default
     "" => function () {
         ViewHelper::redirect(BASE_URL . "main");
