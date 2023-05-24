@@ -1,0 +1,171 @@
+/* Reset styles */
+html, body, h1, p, a {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+  
+/* Container styles */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+  
+/* Main title styles */
+h1.main-title {
+    font-size: 36px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+  
+/* Menu styles */
+.menu {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+  
+.menu-item {
+    margin-right: 10px;
+}
+  
+.menu-link {
+    color: #007bff;
+    text-decoration: none;
+    padding: 5px;
+    font-size: 30px;
+    /*margin-top: 10px;
+    margin-bottom: 10px;   */ 
+}
+
+.container p {
+    margin-top: 10px;
+}
+  
+.logout-link {
+    color: #ff256a;
+}
+  
+/* Banner styles */
+.banner {
+    background-color: #63abf3; 
+    padding: 40px;
+}
+  
+.banner-title {
+    font-size: 36px;
+    color: #333;
+    text-align: center;
+}
+  
+/* Footer styles */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: #efefef;
+    border-top: 1px solid #ccc;
+    font-size: 18px;
+}
+
+.footer-text {
+    color: #5d5d5d;
+    font-size: 14px;
+}
+
+/* Additional styles for <p> elements */
+.container p.menu-link {
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.background-image { /*For adding a background image to the page */
+    background-image: url("https://static.vecteezy.com/system/resources/previews/004/557/715/non_2x/doctor-s-stethoscope-cartoon-vector.jpg");
+    background-size: 300px, 300px;
+    background-repeat: no-repeat;
+    background-position: 900px 150px;
+}
+
+.profile-att{
+    font-size: 22px; 
+}
+
+/* Responsive styles */
+
+/*@media screen and (max-width: 1200px) {
+    .background-image { For adding a background image to the page 
+        background-position: 700px 150px;
+    }
+}*/
+
+@media screen and (max-width: 767px) {
+    .banner {
+        padding: 30px;
+    }
+  
+    .banner-title {
+        font-size: 30px;
+    }
+
+    footer {
+        padding: 30px;
+        font-size: 24px;
+    }
+
+    /*.background-image { For adding a background image to the page
+        background-position: 450px 150px;
+    }*/
+}
+
+@media screen and (min-width: 400px) {
+    .banner {
+        padding: 20px;
+    }
+  
+    .banner-title {
+        font-size: 24px;
+    }
+
+    footer {
+        padding: 20px;
+        font-size: 20px;
+    }
+} 
+  
+/* Only applied to contact-form */
+.contact-form form {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.contact-form label,
+.contact-form input,
+.contact-form textarea {
+    margin-bottom: 10px;
+}
+
+.contact-form label {
+    flex-basis: 30%;
+}
+
+.contact-form input,
+.contact-form textarea {
+    flex-basis: 70%;
+}
+
+.error{
+    color:rgb(255, 106, 106);
+}
+
+
+
+  
+  
+
+  
+  

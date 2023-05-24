@@ -23,33 +23,43 @@ class HealthcareController {
 
     public static function loginPatient(){
 
+        $variables = array();
+
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $validData =    isset($_POST["email"]) && !empty($_POST["email"]) && 
                             isset($_POST["password"]) && !empty($_POST["password"]);
 
-            if($validData && HealthcareDB::checkLoginPatient($_POST["email"], $_POST["password"])){
+            if($validData && HealthcareDB::checkLoginPatient(htmlspecialchars($_POST["email"]), htmlspecialchars($_POST["password"]))){
                 session_start();
-                $_SESSION['patient'] = HealthcareDB::getPatient($_POST["email"]);
+                $_SESSION['patient'] = HealthcareDB::getPatient(htmlspecialchars($_POST["email"]));
 
                 ViewHelper::redirect(BASE_URL . "main");
             }
+            else
+                $variables = ["error" => "Error while logging - email or password is wrong"];
         }
-        ViewHelper::render("view/login_patient.php");
+
+        ViewHelper::render("view/login_patient.php", $variables);
     }
 
     public static function loginDoctor(){ //Maybe in future version is more different than from patients'
+        
+        $variables = array();
+
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $validData =    isset($_POST["email"]) && !empty($_POST["email"]) && 
                             isset($_POST["password"]) && !empty($_POST["password"]);
 
-            if($validData && HealthcareDB::checkLoginDoctor($_POST["email"], $_POST["password"])){
+            if($validData && HealthcareDB::checkLoginDoctor(htmlspecialchars($_POST["email"]), htmlspecialchars($_POST["password"]))){
                 session_start();
-                $_SESSION['doctor'] = HealthcareDB::getDoctor($_POST["email"]);
+                $_SESSION['doctor'] = HealthcareDB::getDoctor(htmlspecialchars($_POST["email"]));
                 
                 ViewHelper::redirect(BASE_URL . "main");
             }
+            else
+                $variables = ["error" => "Error while logging - email or password is wrong"];
         }
-        ViewHelper::render("view/login_doctor.php");
+        ViewHelper::render("view/login_doctor.php", $variables);
     }
 
     public static function logout(){
@@ -62,7 +72,8 @@ class HealthcareController {
 
     
     public static function registerPatient(){
-        
+        $variables = array();
+    
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $validData =    isset($_POST["email"]) && !empty($_POST["email"]) && 
                             isset($_POST["password"]) && !empty($_POST["password"]) &&
@@ -73,18 +84,33 @@ class HealthcareController {
                             isset($_POST["birthday"]) && !empty($_POST["birthday"]) &&
                             isset($_POST["gender"]) && !empty($_POST["gender"]);
             
-            if( $validData && 
-                HealthcareDB::register($_POST["email"], $_POST["password"], $_POST["name"], $_POST["last_name"], 
-                                       $_POST["id"], $_POST["phone"], $_POST["birthday"], $_POST["gender"])){
-                session_start();
-                $_SESSION['patient'] = HealthcareDB::getPatient($_POST["email"]);
+            $isEmailUnique = HealthcareDB::isEmailUnique($_POST["email"]);
+    
+            if($validData && $isEmailUnique){
                 
-                ViewHelper::redirect(BASE_URL . "main");
+                if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+                    $variables = ["error" => "Invalid email format"];
+                } else{
+    
+                    if (HealthcareDB::register(htmlspecialchars($_POST["email"]), htmlspecialchars($_POST["password"]), 
+                        htmlspecialchars($_POST["name"]), htmlspecialchars($_POST["last_name"]), htmlspecialchars($_POST["id"]), 
+                        htmlspecialchars($_POST["phone"]), htmlspecialchars($_POST["birthday"]), htmlspecialchars($_POST["gender"]))){
+    
+                        session_start();
+                        $_SESSION['patient'] = HealthcareDB::getPatient($_POST["email"]);
+    
+                        ViewHelper::redirect(BASE_URL . "main");
+                    }
+                }
+            }
+            else{
+                $variables = ["error" => "There has been an error registering. Try with valid data and a non-registered email"];
             }
         }
-
-        ViewHelper::render("view/register.php");
+    
+        ViewHelper::render("view/register.php", $variables); 
     }
+    
 
     public static function profilePatient(){ //Maybe in a future version they do more different things than with doctors
         session_start();
@@ -124,7 +150,10 @@ class HealthcareController {
     public static function checkBookings(){ //Example of unified version. I expect in the future, probably they will 
                                             // not do the same things, so it would be better in different methods
                                             // but as an example if fine
-        session_start();
+    
+    
+        if(!isset($_SESSION['doctor']) && !isset($_SESSION['patient']))
+            session_start();
 
         if(isset($_SESSION['patient'])){
             $variables = [  "appointments" => HealthcareDB::checkPatientBookings($_SESSION['patient']["email"]), 
@@ -139,29 +168,33 @@ class HealthcareController {
     }
 
     public static function cancelBooking($id_appointment){
-        HealthcareDB::cancelBooking($id_appointment);
-        
-        self::checkBookings();
+        session_start();
+
+        if(isset($_SESSION['doctor']) || isset($_SESSION['patient'])){ //check if session is established - for security
+            HealthcareDB::cancelBooking($id_appointment);
+
+            self::checkBookings();
+        }
     }  
 
     public static function book() {
         session_start();
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if(isset($_POST["speciality"]) && isset($_POST["date"]) && isset($_POST["id_doctor_and_hour"])){
-                $selectedOption = $_POST["id_doctor_and_hour"];
+                $selectedOption =  htmlspecialchars($_POST["id_doctor_and_hour"]);
                 list($id_doctor, $hour) = explode('|', $selectedOption);
                 
-                //print($_SESSION['patient']['email']);
-                HealthcareDB::bookAppointment($id_doctor, $hour, $_POST["date"], $_SESSION['patient']['id_patient']);
+                HealthcareDB::bookAppointment($id_doctor, $hour,  htmlspecialchars($_POST["date"]), $_SESSION['patient']['id_patient']);
 
-                //self::checkBookings();
                 ViewHelper::redirect(BASE_URL . "healthcare/my_bookings");
             }
             else if(isset($_POST["speciality"]) && isset($_POST["date"])){
-                $variables = [  "speciality" => $_POST["speciality"],
-                                "date" => $_POST["date"],
+                $variables = [  "speciality" =>  htmlspecialchars($_POST["speciality"]),
+                                "date" =>  htmlspecialchars($_POST["date"]),
                                 "doctors" => HealthcareDB::getDoctorsByDateAndSpeciality(
-                                            $_POST["speciality"], $_POST["date"], $_SESSION['patient']['id_patient'])];
+                                            htmlspecialchars($_POST["speciality"]),  
+                                            htmlspecialchars($_POST["date"]),  
+                                            $_SESSION['patient']['id_patient'])];
 
                 ViewHelper::render("view/book.php", $variables);    
             }
@@ -171,8 +204,8 @@ class HealthcareController {
                 foreach ($dates as $date) 
                     echo $date . "<br>";*/
                 
-                $variables = [  "speciality" => $_POST["speciality"],
-                                "dates" => HealthcareDB::getDatesBySpeciality($_POST["speciality"])];
+                $variables = [  "speciality" =>  htmlspecialchars($_POST["speciality"]),
+                                "dates" => HealthcareDB::getDatesBySpeciality( htmlspecialchars($_POST["speciality"]))];
 
                 ViewHelper::render("view/book.php", $variables);    
             }

@@ -67,6 +67,18 @@ class HealthcareDB {
         return false;        
     }
 
+    public static function isEmailUnique($email) {
+        $db = DBInit::getInstance();
+
+        $query = "SELECT COUNT(*) FROM patients WHERE email = :email";
+
+        $statement = $db->prepare($query);
+        $statement->bindParam(':email', $email);
+        $statement->execute();
+        $count = $statement->fetchColumn();
+        return $count === 0;
+    }
+
     public static function register($email, $password, $name, $last_name, $id, $phone, $birthday, $gender) {
         $db = DBInit::getInstance();
         
@@ -132,6 +144,8 @@ class HealthcareDB {
 
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
         
+        //print_r($results);
+
         return $results;
     }
 

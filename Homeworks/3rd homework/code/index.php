@@ -14,6 +14,7 @@ $path = isset($_SERVER["PATH_INFO"]) ? trim($_SERVER["PATH_INFO"], "/") : "";
 $urls = [
     "main" => function () {
         HealthcareController::main();
+        //HealthcareController::profilePatient();    
     },
 
     "healthcare/login_patient" => function () {

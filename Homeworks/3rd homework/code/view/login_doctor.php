@@ -1,32 +1,45 @@
 <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Log in - Doctors </title>
+    <link rel="stylesheet" href="../../view/css/styles.css">
+</head>
+<body>
+    <div class="background-image">
 
-<meta charset="UTF-8" />
-<title> Log in - Doctor </title>
+        <header class="banner">
+            <h1 class="banner-title">Hospital XYZ</h1>
+        </header>
 
-<h1> Log in for Doctors </h1>
+        <section class="container">
+            <h1 class="main-title">Login as doctor</h1>
+            
+            <?php if(isset($error)){?>
+                <p class="error"> <?php print($error); ?> </p> <?php
+            }?>
 
-<form method="POST" id="login" action="../healthcare/login_doctor">
-        <p>
-          <label for="email">Email:</label>
-          <input type="text" name="email" required>
-        </p>
-        <p>
-          <label for="password">Password:</label>
-          <input type="password" name="password" required>
-        </p>
-        <p> <input type="submit" value="Send"> </p>
+            <form method="POST" id="login" action="../healthcare/login_doctor">
+                <p>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" required>
+                </p>
+                <p>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" required>
+                </p>
+                <p>
+                    <input type="submit" value="Send">
+                </p>
+            </form>
+        </section>
 
-<?php
+        <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> <br> 
 
-  /*
-    if(isset($variables['succesful_login']))
-        echo "Succesful login, doctor";
-    else
-        echo "xd";
-    
-    if(isset($_SESSION['doctor']))
-      echo "Hello doctor" . $_SESSION['doctor']["name"];
-      */
-?>
-      
-    <a href="<?= BASE_URL . "main" ?>">Main Menu </a>
+        <footer> 
+            <p> <a href="<?= BASE_URL . "main" ?>">Main Menu</a> </p> <br>
+            <p> Hospital XYZ - More than a Hospital </p>
+        </footer>
+    </div>
+</body>
+</html>

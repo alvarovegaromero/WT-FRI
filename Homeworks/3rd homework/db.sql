@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 22, 2023 at 06:39 PM
+-- Generation Time: May 24, 2023 at 11:28 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -38,8 +38,8 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`id_appointment`, `id_schedule`, `id_patient`) VALUES
-(5, 12, 1),
-(8, 3, 1);
+(8, 3, 1),
+(18, 5, 1);
 
 --
 -- Triggers `appointments`
@@ -115,7 +115,8 @@ INSERT INTO `patients` (`id_patient`, `email`, `password`, `name`, `last_name`, 
 (2, 'pepe@gmail.com', '$2y$10$xN1uPTNJ7qsRbPmjVzRKDeAOovNunT0g/S3ULRKltYizsz98vPlz.', 'Pepe', 'Lopez', '71557871X', '684132336', '2004-07-29', 'Male'),
 (3, 'patricia@outlook.com', '$2y$10$xN1uPTNJ7qsRbPmjVzRKDeAOovNunT0g/S3ULRKltYizsz98vPlz.', 'Patricia', 'Doncic', '19872663T', '661237431', '2013-02-13', 'Female'),
 (4, 'djokovic@fri.si', '$2y$10$EEovtltd1/uGEnHKBdZOW.q3Nh1IotZ9IqFnReDiY/BJfPF7Zu/nG', 'David', 'Djokovic', '81282737E', '1928176461', '1987-03-21', 'Male'),
-(6, 'vegaromeroalvaro@gmail.com', '$2y$10$07N./XD/kiyUHicQdhjg3.4ExF3.ayp/Br8ZAi8r1uC1fZpIh1vd6', 'Álvaro', 'Vega Romero', '1212121', '+34633307578', '2023-05-03', NULL);
+(6, 'vegaromeroalvaro@gmail.com', '$2y$10$07N./XD/kiyUHicQdhjg3.4ExF3.ayp/Br8ZAi8r1uC1fZpIh1vd6', 'Álvaro', 'Vega Romero', '1212121', '+34633307578', '2023-05-03', NULL),
+(7, 'vegaromereoalvaro@gmail.com', '$2y$10$8GirpIKEOexs2IKkQ78sP.ZG1hGI0/iImizxk7FZUcxlBi37Eu5/O', 'Álvaro', 'Vega Romero', '1212121', '12121212', '2001-08-29', NULL);
 
 -- --------------------------------------------------------
 
@@ -138,11 +139,11 @@ CREATE TABLE `schedules` (
 INSERT INTO `schedules` (`id_schedule`, `id_doctor`, `date`, `hour`, `state`) VALUES
 (1, 1, '2023-06-01', '17:00:00', 'Available'),
 (3, 1, '2023-06-03', '17:20:00', 'Occupied'),
-(5, 1, '2023-06-01', '17:40:00', 'Available'),
+(5, 1, '2023-06-01', '17:40:00', 'Occupied'),
 (7, 1, '2023-06-02', '18:00:00', 'Available'),
 (9, 2, '2023-06-01', '17:00:00', 'Available'),
 (10, 2, '2023-06-01', '17:40:00', 'Available'),
-(12, 3, '2023-06-01', '17:00:00', 'Occupied'),
+(12, 3, '2023-06-01', '17:00:00', 'Available'),
 (13, 3, '2023-06-02', '17:20:00', 'Available'),
 (14, 3, '2023-06-01', '19:00:00', 'Available');
 
@@ -188,7 +189,7 @@ ALTER TABLE `schedules`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `id_appointment` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_appointment` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `doctors`
@@ -200,7 +201,7 @@ ALTER TABLE `doctors`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id_patient` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_patient` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `schedules`
